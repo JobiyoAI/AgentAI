@@ -1,0 +1,20 @@
+mi-agente-ai/
+   ├── docs/              # PDFs aquí
+   ├── app.py             # Streamlit UI
+   ├── agent.py           # Lógica del agente
+   ├── rag.py             # Sistema RAG
+   ├── requirements.txt
+   └── .env              # API keys
+
+
+# Crear venv
+TS > python -m venv venv
+
+# Activar venv
+TS > venv/scripts/activate
+
+# Instalar dependencias
+TS (venv) > pip install -r requirements.txt
+
+# Run app
+TS (venv) > streamlit run app.py

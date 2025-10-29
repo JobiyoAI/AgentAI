@@ -1,0 +1,24 @@
+# LLM y Framework
+langchain==0.1.0
+langchain-google-genai==0.0.6
+langchain-community==0.0.13
+
+# Vector Store
+supabase==2.3.4
+vecs==0.4.0
+
+# PDF Processing
+pypdf==3.17.4
+pymupdf==1.23.8
+
+# Embeddings
+sentence-transformers==2.2.2
+
+# Web Search
+tavily-python==0.3.3
+
+# UI
+streamlit==1.29.0
+
+# Utilities
+python-dotenv==1.0.0
