@@ -70,15 +70,63 @@ class AIAgent:
         # Prompt template para el agente
         template = """Eres un asistente AI útil con acceso a documentos locales y búsqueda web.
 
-Tienes acceso a las siguientes herramientas:
+                    Tienes acceso a las siguientes herramientas:
 
-{tools}
+                    {tools}
 
-Usa el siguiente formato:
+                    Usa el siguiente formato:
 
-Pregunta: la pregunta de entrada que debes responder
-Pensamiento: siempre debes pensar qué hacer
-Acción: la acción a tomar, debe ser una de [{tool_names}]
-Entrada de Acción: la entrada para la acción
-Observación: el resultado de la acción
-... (este Pensamiento/Acción/Entrada de Acción/O
+                    Pregunta: la pregunta de entrada que debes responder
+                    Pensamiento: siempre debes pensar qué hacer
+                    Acción: la acción a tomar, debe ser una de [{tool_names}]
+                    Entrada de Acción: la entrada para la acción
+                    Observación: el resultado de la acción
+                    ... (este Pensamiento/Acción/Entrada de Acción/Observación puede repetirse N veces)
+                    Pensamiento: Ahora sé la respuesta final
+                    Respuesta Final: la respuesta final a la pregunta de entrada original
+
+                    Cuando busques en documentos, primero intenta con BuscarDocumentos. Si no encuentras información suficiente, usa BuscarWeb.
+
+                    Pregunta: {input}
+                    {agent_scratchpad}"""
+
+        prompt = PromptTemplate.from_template(template)
+        
+        # Crear agente ReAct
+        agent = create_react_agent(
+            llm=self.llm,
+            tools=self.tools,
+            prompt=prompt
+        )
+        
+        # Crear ejecutor
+        agent_executor = AgentExecutor(
+            agent=agent,
+            tools=self.tools,
+            verbose=True,
+            max_iterations=5,
+            handle_parsing_errors=True
+        )
+        
+        return agent_executor
+    
+    def run(self, query: str) -> Dict[str, Any]:
+        """Ejecuta una consulta en el agente"""
+        try:
+            result = self.agent.invoke({"input": query})
+            return {
+                "success": True,
+                "output": result.get("output", ""),
+                "intermediate_steps": result.get("intermediate_steps", [])
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "output": f"Error: {str(e)}",
+                "error": str(e)
+            }
+    
+    def chat(self, message: str) -> str:
+        """Interfaz simple de chat"""
+        result = self.run(message)
+        return result.get("output", "Lo siento, ocurrió un error.")
